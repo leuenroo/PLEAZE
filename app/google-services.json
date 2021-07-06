@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1022939878402",
+    "project_id": "pleaze-132fe",
+    "storage_bucket": "pleaze-132fe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022939878402:android:8360acb84f9ae2b84c031b",
+        "android_client_info": {
+          "package_name": "com.leuenroo.pleaze"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1022939878402-06anai71lbkl4nb62bgcp2ionfknqqib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI7wD9dpdJUTN84PXdK1Xy_Wnvi_YLjIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022939878402-06anai71lbkl4nb62bgcp2ionfknqqib.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
