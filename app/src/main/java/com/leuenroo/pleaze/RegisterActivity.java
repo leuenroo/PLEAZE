@@ -90,10 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
                     phoneET.requestFocus();
                 }
 
-                else if (password == null) {
-                    passwordET.setError("error");
-                    emailET.requestFocus();
-                }
+                //made change
 
                 else {
                     createAccount();
