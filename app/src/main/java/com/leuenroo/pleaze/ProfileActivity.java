@@ -48,6 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
         phoneET = (EditText) findViewById(R.id.editTextPhone);
         updateProfileButton = (Button) findViewById(R.id.updateProfileButton);
 
+        //reference current user's document
         userRef = fStore.collection("users").document(userID);
 
         //set fields to appropriate values
