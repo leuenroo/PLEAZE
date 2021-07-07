@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
+    //variables
     private TextView createAccountTextView;
     private EditText emailET, passwordET;
     private Button loginButton;
@@ -28,15 +29,18 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //set views
         emailET = (EditText) findViewById(R.id.editTextEmail);
         passwordET = (EditText) findViewById(R.id.editTextPassword);
         createAccountTextView = (TextView) findViewById(R.id.createAccountTextView);
         loginButton = (Button) findViewById(R.id.logInButton);
         fAuth = FirebaseAuth.getInstance();
 
+        //allow create account text to be clicked
         createAccountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //take to register activity
                 Intent intent = new Intent(getBaseContext(), RegisterActivity.class);
                 startActivity(intent);
             }
@@ -52,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                 fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-
+                        //if successful, log them in and take them to the main activity
                         if(task.isSuccessful()) {
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         }

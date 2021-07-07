@@ -39,12 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        //set fields to null
-        email = null;
-        password = null;
-        firstName = null;
-        lastName = null;
-        phone = null;
 
         //set views
         emailET = (EditText) findViewById(R.id.editTextEmail);
@@ -70,30 +64,14 @@ public class RegisterActivity extends AppCompatActivity {
                 phone = phoneET.getText().toString();
 
                 //check fields
-                if (firstName == null) {
-                    firstNameET.setError("error");
-                    firstNameET.requestFocus();
-                }
-
-                else if (lastName == null) {
-                    lastNameET.setError("error");
-                    lastNameET.requestFocus();
-                }
-
-                else if (email == null) {
-                    emailET.setError("error");
-                    emailET.requestFocus();
-                }
-
-                else if (phone == null) {
-                    phoneET.setError("error");
-                    phoneET.requestFocus();
+                if (isValidEmail(email) && isValidName(firstName) && isValidName(lastName)) {
+                    createAccount();
                 }
 
                 //made change
 
                 else {
-                    createAccount();
+                    Toast.makeText(RegisterActivity.this, "Error with fields", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -112,12 +90,14 @@ public class RegisterActivity extends AppCompatActivity {
                             // if successful add info to firestore
                             Log.d(TAG, "createUserWithEmail:success");
                             userID = fAuth.getCurrentUser().getUid();
+                            //put fields into map to put into firestore
                             Map<String, Object> user = new HashMap<>();
                             user.put("firstName", firstName);
                             user.put("lastName", lastName);
                             user.put("email", email);
                             user.put("phone", phone);
                             DocumentReference documentReference = fStore.collection("users").document(userID);
+                            //set user to firestore docref
                             documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
@@ -134,5 +114,18 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    //check email
+    public boolean isValidEmail(String e) {
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return e.matches(regex);
+    }
+
+    //check name
+    public boolean isValidName(String n) {
+        String regexName = "\\p{Upper}(\\p{Lower}+\\s?)";
+        String patternName = "(" + regexName + "){1,2}";
+        return n.matches(patternName);
     }
 }
