@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PLEAZE">
-        <activity android:name=".AvailabilityScreen"></activity>
+        <activity android:name=".AvailabilityActivity"></activity>
         <activity android:name=".ProfileActivity" />
         <activity android:name=".ParkingActivity" />
         <activity android:name=".ReservationActivity" />
