@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //set views
-        logoutButton = (Button) findViewById(R.id.logOutButton);
+        logoutButton = (Button) findViewById(R.id.logoutButton);
         profileButton = (Button) findViewById(R.id.profileButton);
 
 
