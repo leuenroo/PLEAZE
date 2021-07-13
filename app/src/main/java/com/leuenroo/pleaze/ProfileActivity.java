@@ -27,10 +27,12 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
     private EditText firstNameET, lastNameET, phoneET;
-    private TextView emailTV;
+    private TextView emailTV, creditTV;
     private Button updateProfileButton;
     private DocumentReference userRef;
-    private String email, password, firstName, lastName, phone, userID;
+    private Account account;
+    private double credit;
+    private String email, firstName, lastName, phone, userID, creditString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
         lastNameET = (EditText) findViewById(R.id.editTextLastName);
         phoneET = (EditText) findViewById(R.id.editTextPhone);
         updateProfileButton = (Button) findViewById(R.id.updateProfileButton);
+        creditTV = (TextView) findViewById(R.id.creditTextView);
 
         //reference current user's document
         userRef = fStore.collection("users").document(userID);
@@ -67,6 +70,9 @@ public class ProfileActivity extends AppCompatActivity {
                             emailTV.setText(email);
                             phone = documentSnapshot.getString("phone");
                             phoneET.setText(phone);
+                            credit = documentSnapshot.getDouble("credit");
+                            creditString = "$" + String.format("%.2f",credit);
+                            creditTV.setText(creditString);
 
                         }
                         //if there is an error display to user
@@ -98,22 +104,15 @@ public class ProfileActivity extends AppCompatActivity {
         lastName = lastNameET.getText().toString();
         phone = phoneET.getText().toString();
 
-
-        //put info in user object
-        Map<String, Object> user = new HashMap<>();
-
-        //put key/value pairs into user object
-        user.put("firstName", firstName);
-        user.put("lastName", lastName);
-        user.put("email", email);
-        user.put("phone", phone);
+        //create account object with appropriate values
+        account = new Account(firstName, lastName, phone, email, credit);
 
 
         userRef = fStore.collection("users").document(userID);
 
-        //check to make sure values are valid and set user object to user reference
+        //check to make sure values are valid and set account object to user reference
         if (isValidEmail(email) && isValidName(firstName) && isValidName(lastName)) {
-            userRef.set(user)
+            userRef.set(account)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         //if it works let them know it updated
                         @Override
