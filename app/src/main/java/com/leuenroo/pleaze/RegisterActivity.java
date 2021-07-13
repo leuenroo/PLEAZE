@@ -33,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText emailET, passwordET, firstNameET, lastNameET, phoneET;
     private Button createAccountButton;
     private String email, password, firstName, lastName, phone, userID;
+    private Account account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,6 @@ public class RegisterActivity extends AppCompatActivity {
                     createAccount();
                 }
 
-                //made change
 
                 else {
                     Toast.makeText(RegisterActivity.this, "Error with fields", Toast.LENGTH_LONG).show();
@@ -90,15 +90,11 @@ public class RegisterActivity extends AppCompatActivity {
                             // if successful add info to firestore
                             Log.d(TAG, "createUserWithEmail:success");
                             userID = fAuth.getCurrentUser().getUid();
-                            //put fields into map to put into firestore
-                            Map<String, Object> user = new HashMap<>();
-                            user.put("firstName", firstName);
-                            user.put("lastName", lastName);
-                            user.put("email", email);
-                            user.put("phone", phone);
+                            //create account object with appropriate values
+                            account = new Account(firstName, lastName, phone, email);
                             DocumentReference documentReference = fStore.collection("users").document(userID);
                             //set user to firestore docref
-                            documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            documentReference.set(account).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     Toast.makeText(RegisterActivity.this, "Account created.", Toast.LENGTH_LONG).show();
