@@ -22,11 +22,10 @@
 
 
     <Button
-        android:id="@+id/profileButton"
+        android:id="@+id/parkButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="profile"
-        android:text="Profile"
+        android:text="Park"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +46,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:onClick="reservation"
-            android:text="Reservation" />
+            android:text="Reservation"
+            android:textSize="13dp" />
 
         <Button
             android:id="@+id/availabilityButton"
@@ -56,7 +56,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:onClick="availability"
-            android:text="Availability" />
+            android:text="Availability"
+            android:textSize="13dp" />
 
         <Button
             android:id="@+id/logoutButton"
@@ -65,10 +66,22 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:onClick="logout"
-            android:text="Logout" />
+            android:text="Logout"
+            android:textSize="13sp" />
 
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/profileImageView"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="2dp"
+        android:onClick="profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_person_24" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
