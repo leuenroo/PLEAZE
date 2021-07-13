@@ -142,28 +142,35 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    //add credit function
     public void addCredit(View view) {
+        //create the dialog
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Enter amount");
         final EditText input = new EditText(this);
+        //only allow numbers to be input
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         input.setRawInputType(Configuration.KEYBOARD_12KEY);
         alert.setView(input);
+        //set add and cancel buttons
         alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                //Put actions for OK button here
+                //if they click ok add the credit to their account
+                //convert editText to double
                 addedCredit = Double.parseDouble(input.getText().toString());
+                //add it
                 credit += addedCredit;
+                //create string to update credit text view
                 creditString = "$" + String.format("%.2f",credit);
                 creditTV.setText(creditString);
-
+                //update it in firestore
                 userRef = fStore.collection("users").document(userID);
                 userRef.update("credit", credit);
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                //Put actions for CANCEL button here, or leave in blank
+                //nothing
             }
         });
         alert.show();
