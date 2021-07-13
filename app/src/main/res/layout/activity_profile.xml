@@ -76,15 +76,25 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextLastName" />
 
     <Button
-        android:id="@+id/updateProfileButton"
+        android:id="@+id/addCreditButton"
         android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Update profile"
-        android:onClick="updateUser"
+        android:text="Add credit"
+        android:onClick="addCredit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/creditTextView" />
+
+    <Button
+        android:id="@+id/updateProfileButton"
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"
+        android:onClick="updateUser"
+        android:text="Update profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addCreditButton" />
 
     <Button
         android:id="@+id/homeButton"

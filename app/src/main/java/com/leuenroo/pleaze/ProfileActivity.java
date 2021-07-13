@@ -1,10 +1,14 @@
 package com.leuenroo.pleaze;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,7 +35,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Button updateProfileButton;
     private DocumentReference userRef;
     private Account account;
-    private double credit;
+    private double credit, addedCredit;
     private String email, firstName, lastName, phone, userID, creditString;
 
     @Override
@@ -136,6 +140,33 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
+    }
+
+    public void addCredit(View view) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Enter amount");
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setRawInputType(Configuration.KEYBOARD_12KEY);
+        alert.setView(input);
+        alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Put actions for OK button here
+                addedCredit = Double.parseDouble(input.getText().toString());
+                credit += addedCredit;
+                creditString = "$" + String.format("%.2f",credit);
+                creditTV.setText(creditString);
+
+                userRef = fStore.collection("users").document(userID);
+                userRef.update("credit", credit);
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Put actions for CANCEL button here, or leave in blank
+            }
+        });
+        alert.show();
     }
 
     //check email
