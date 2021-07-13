@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button logoutButton, profileButton,availabilityButton, reservationButton;
+    private Button parkButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +26,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //set views
-        logoutButton = (Button) findViewById(R.id.logoutButton);
-        profileButton = (Button) findViewById(R.id.profileButton);
-        availabilityButton= (Button) findViewById(R.id.availabilityButton);
-        reservationButton= (Button) findViewById(R.id.reservationButton);
+        parkButton = findViewById(R.id.parkButton);
 
 
 
