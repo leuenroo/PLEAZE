@@ -20,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
+
     <Button
         android:id="@+id/profileButton"
         android:layout_width="wrap_content"
@@ -30,6 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewPleaze" />
+
 
 
     <LinearLayout
@@ -44,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:onClick="logout"
+            android:onClick="reservation"
             android:text="Reservation" />
 
         <Button
@@ -53,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:onClick="logout"
+            android:onClick="availability"
             android:text="Availability" />
 
         <Button
