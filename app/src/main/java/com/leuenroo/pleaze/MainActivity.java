@@ -52,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         //grab current users ID and reference that user
-        userID = fAuth.getCurrentUser().getUid();
+        if (fAuth.getCurrentUser().getUid() != null) {
+            userID = fAuth.getCurrentUser().getUid();
+        }
         userRef = fStore.collection("users").document(userID);
 
         //create reference for parking lot

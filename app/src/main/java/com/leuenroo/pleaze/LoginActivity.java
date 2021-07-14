@@ -36,6 +36,9 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = (Button) findViewById(R.id.logInButton);
         fAuth = FirebaseAuth.getInstance();
 
+        //sign out from firebase
+        FirebaseAuth.getInstance().signOut();
+
         //allow create account text to be clicked
         createAccountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
