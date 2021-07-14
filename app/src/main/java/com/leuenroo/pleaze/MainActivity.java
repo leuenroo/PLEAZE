@@ -29,10 +29,6 @@ public class MainActivity extends AppCompatActivity {
         parkButton = findViewById(R.id.parkButton);
 
 
-
-
-
-
     }
 
     //log user out
