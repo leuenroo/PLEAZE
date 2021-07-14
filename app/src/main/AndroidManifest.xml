@@ -11,7 +11,6 @@
         android:theme="@style/Theme.PLEAZE">
         <activity android:name=".AvailabilityActivity"></activity>
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".ParkingActivity" />
         <activity android:name=".ReservationActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
