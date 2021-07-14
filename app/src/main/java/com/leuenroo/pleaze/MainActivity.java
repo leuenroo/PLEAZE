@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private ParkingLot parkingLot;
     private Boolean[] spotArray;
     private List<Boolean> spotList;
-    private int totalSpots, availableSpots;
+    private int totalSpots, currentSpot, availableSpots;
     private double credit;
     private String userID, startTime;
     private FirebaseFirestore fStore;
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             if (documentSnapshot.exists()) {
                                                 //get spot number from session document
-                                                int currentSpot = documentSnapshot.getLong("spotNumber").intValue();
+                                                currentSpot = documentSnapshot.getLong("spotNumber").intValue();
                                                 startTime = documentSnapshot.getString("startTime");
                                                 //get current time
                                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -255,8 +255,34 @@ public class MainActivity extends AppCompatActivity {
                                                                     totalSpots = documentSnapshot.getLong("totalSpots").intValue();
                                                                     spotList = (List<Boolean>) documentSnapshot.get("spots");
 
+                                                                    sessionRef.get()
+                                                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                                @Override
+                                                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                                    if (documentSnapshot.exists()) {
+                                                                                        //update spot so that it becomes available
+                                                                                        currentSpot = documentSnapshot.getLong("spotNumber").intValue() - 2;
+                                                                                        spotList.set(currentSpot, true);
+                                                                                        Toast.makeText(MainActivity.this, "Current spot it " + currentSpot, Toast.LENGTH_LONG).show();
+
+                                                                                        //set variables to fields
+                                                                                        lotRef.update("availableSpots", availableSpots + 1);
+                                                                                        lotRef.update("spots", spotList);
+                                                                                        //update users credit and parked fields
+                                                                                        userRef.update("credit", newCredit);
+                                                                                        userRef.update("parked", false);
+
+                                                                                    }
+                                                                                    //if there is an error display to user
+                                                                                    else {
+                                                                                        Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
+                                                                                    }
+
+                                                                                }
+                                                                            });
                                                                     //update lots available spots
                                                                     lotRef.update("availableSpots", availableSpots + 1);
+                                                                    lotRef.update("spots", spotList);
                                                                     //update users credit and parked fields
                                                                     userRef.update("credit", newCredit);
                                                                     userRef.update("parked", false);
