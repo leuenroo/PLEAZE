@@ -261,11 +261,12 @@ public class MainActivity extends AppCompatActivity {
                                                                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                                                     if (documentSnapshot.exists()) {
                                                                                         //update spot so that it becomes available
-                                                                                        currentSpot = documentSnapshot.getLong("spotNumber").intValue() - 2;
+                                                                                        currentSpot = documentSnapshot.getLong("spotNumber").intValue();
+                                                                                        currentSpot = currentSpot - 2;
                                                                                         spotList.set(currentSpot, true);
-                                                                                        Toast.makeText(MainActivity.this, "Current spot it " + currentSpot, Toast.LENGTH_LONG).show();
+                                                                                        Toast.makeText(MainActivity.this, "Current spot is " + currentSpot, Toast.LENGTH_LONG).show();
 
-                                                                                        //set variables to fields
+                                                                                        //update fields
                                                                                         lotRef.update("availableSpots", availableSpots + 1);
                                                                                         lotRef.update("spots", spotList);
                                                                                         //update users credit and parked fields
@@ -280,12 +281,6 @@ public class MainActivity extends AppCompatActivity {
 
                                                                                 }
                                                                             });
-                                                                    //update lots available spots
-                                                                    lotRef.update("availableSpots", availableSpots + 1);
-                                                                    lotRef.update("spots", spotList);
-                                                                    //update users credit and parked fields
-                                                                    userRef.update("credit", newCredit);
-                                                                    userRef.update("parked", false);
 
                                                                 }
                                                                 //if there is an error display to user
