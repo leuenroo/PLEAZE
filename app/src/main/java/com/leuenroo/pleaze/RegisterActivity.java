@@ -91,7 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             userID = fAuth.getCurrentUser().getUid();
                             //create account object with appropriate values
-                            account = new Account(firstName, lastName, phone, email);
+                            account = new Account(firstName, lastName, phone, email, 0, null);
                             DocumentReference documentReference = fStore.collection("users").document(userID);
                             //set user to firestore docref
                             documentReference.set(account).addOnSuccessListener(new OnSuccessListener<Void>() {
