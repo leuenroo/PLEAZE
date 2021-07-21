@@ -180,6 +180,11 @@ public class MainActivity extends AppCompatActivity {
                                     //break out of loop when spot is given and set
                                     break;
                                 }
+
+                                //if current spot is last spot, let them know they cannot park
+                                if (currentSpot == (spotList.size() - 1) && spotList.get(currentSpot) == false) {
+                                    Toast.makeText(MainActivity.this, "No spots available. Please try again later.", Toast.LENGTH_LONG).show();
+                                }
                             }
 
                         }
@@ -197,10 +202,6 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-
-
-
 
     }
 
@@ -281,13 +282,11 @@ public class MainActivity extends AppCompatActivity {
 
                                                                                 }
                                                                             });
-
                                                                 }
                                                                 //if there is an error display to user
                                                                 else {
                                                                     Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
                                                                 }
-
                                                             }
                                                         })
                                                         //if there is an error display to user
@@ -298,15 +297,11 @@ public class MainActivity extends AppCompatActivity {
                                                             }
                                                         });
 
-
-
-
                                             }
                                             //if there is an error display to user
                                             else {
                                                 Toast.makeText(MainActivity.this, "Error loading document 1.", Toast.LENGTH_SHORT).show();
                                             }
-
                                         }
                                     })
                                     //if there is an error display to user
@@ -321,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
                         else {
                             Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
                         }
-
                     }
                 })
                 //if there is an error display to user
@@ -331,8 +325,6 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-
     }
 
     //take user to profile activity
@@ -356,7 +348,6 @@ public class MainActivity extends AppCompatActivity {
                 "dd-MM-yyyy HH:mm:ss");
 
         long difference_In_Minutes = 0;
-
 
         try {
 

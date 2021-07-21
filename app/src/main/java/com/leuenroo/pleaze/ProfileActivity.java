@@ -109,7 +109,7 @@ public class ProfileActivity extends AppCompatActivity {
         phone = phoneET.getText().toString();
 
         //create account object with appropriate values
-        account = new Account(firstName, lastName, phone, email, credit);
+        account = new Account(firstName, lastName, phone, email, credit, null);
 
 
         userRef = fStore.collection("users").document(userID);
