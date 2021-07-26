@@ -32,10 +32,12 @@ public class MainActivity extends AppCompatActivity {
     private List<Boolean> spotList;
     private int totalSpots, currentSpot, availableSpots;
     private double credit;
-    private String userID, startTime;
+    private String userID, startTime, date, reservation;
+    private boolean parked;
+    private Button parkButton, unparkButton;
     private FirebaseFirestore fStore;
     private FirebaseAuth fAuth;
-    private DocumentReference lotRef, userRef;
+    private DocumentReference lotRef, userRef, reservationRef;
 
 
     @Override
@@ -56,6 +58,18 @@ public class MainActivity extends AppCompatActivity {
             userID = fAuth.getCurrentUser().getUid();
         }
         userRef = fStore.collection("users").document(userID);
+        //set views
+        parkButton = findViewById(R.id.parkButton);
+        unparkButton = findViewById(R.id.unparkButton);
+
+        //get date
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        date = simpleDateFormat.format(timestamp);
+
+        //set buttons invisible by default
+        parkButton.setVisibility(View.GONE);
+        unparkButton.setVisibility(View.GONE);
 
         //create reference for parking lot
         lotRef = fStore.collection("parkingLots").document("parkingLot");
@@ -91,7 +105,17 @@ public class MainActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             //getting fields as strings from document
                             startTime = documentSnapshot.getString("lastSession");
+                            reservation = documentSnapshot.getString("reservation");
+                            parked = documentSnapshot.getBoolean("parked");
                             credit = documentSnapshot.getDouble("credit");
+
+                            //if user is parked, show unpark button. if unparked, show park button
+                            if (parked == true) {
+                                unparkButton.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                parkButton.setVisibility(View.VISIBLE);
+                            }
                         }
                         //if there is an error display to user
                         else {
@@ -142,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
     //park function
     public void park (View view) {
         //get info from parking lot
+
         lotRef.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -154,35 +179,17 @@ public class MainActivity extends AppCompatActivity {
                             spotList = (List<Boolean>) documentSnapshot.get("spots");
 
                             //check for lowest available spot
-                            for (int currentSpot = 0; currentSpot < spotList.size(); currentSpot++) {
-                                if (spotList.get(currentSpot) == true) {
-                                    Toast.makeText(MainActivity.this, "You are given spot " + (currentSpot + 1), Toast.LENGTH_LONG).show();
-                                    //set the given spot to unavailable
-                                    spotList.set(currentSpot, false);
+                            for (currentSpot = 0; currentSpot < spotList.size(); currentSpot++) {
 
+                                if (spotList.get(currentSpot) == true ) {
                                     //update lot
-                                    lotRef.update("spots", spotList);
-                                    lotRef.update("availableSpots", availableSpots - 1);
-                                    //get current time
-                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                                    String currentTime = simpleDateFormat.format(timestamp);
-                                    double rate = 1.0;
-                                    //start new session
-                                    Session session = new Session(userID, currentTime, (currentSpot + 1), rate);
-                                    //update users lastSession and parked fields
-                                    userRef.update("lastSession", currentTime);
-                                    userRef.update("parked", true);
-
-                                    //set session to sessions collection using userID and start time
-                                    DocumentReference sessionRef = fStore.collection("sessions").document(userID + currentTime);
-                                    sessionRef.set(session);
+                                    parkUpdate();
                                     //break out of loop when spot is given and set
                                     break;
                                 }
 
                                 //if current spot is last spot, let them know they cannot park
-                                if (currentSpot == (spotList.size() - 1) && spotList.get(currentSpot) == false) {
+                                else if (currentSpot == (spotList.size() - 1)) {
                                     Toast.makeText(MainActivity.this, "No spots available. Please try again later.", Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -215,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             //get users last session start time
                             startTime = documentSnapshot.getString("lastSession");
+                            credit = documentSnapshot.getDouble("credit");
                             //reference session using user id and start time
                             DocumentReference sessionRef = fStore.collection("sessions").document(userID + startTime);
 
@@ -265,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
                                                                                         currentSpot = documentSnapshot.getLong("spotNumber").intValue();
                                                                                         currentSpot = currentSpot - 2;
                                                                                         spotList.set(currentSpot, true);
-                                                                                        Toast.makeText(MainActivity.this, "Current spot is " + currentSpot, Toast.LENGTH_LONG).show();
+                                                                                        Toast.makeText(MainActivity.this, "You have been charged " + total + ". Thank you for parking with PLeaze!", Toast.LENGTH_LONG).show();
 
                                                                                         //update fields
                                                                                         lotRef.update("availableSpots", availableSpots + 1);
@@ -273,6 +281,9 @@ public class MainActivity extends AppCompatActivity {
                                                                                         //update users credit and parked fields
                                                                                         userRef.update("credit", newCredit);
                                                                                         userRef.update("parked", false);
+
+                                                                                        parkButton.setVisibility(View.VISIBLE);
+                                                                                        unparkButton.setVisibility(View.GONE);
 
                                                                                     }
                                                                                     //if there is an error display to user
@@ -374,6 +385,33 @@ public class MainActivity extends AppCompatActivity {
         double time = (double)difference_In_Minutes;
         //return difference
         return time;
+    }
+
+    public void parkUpdate () {
+        Toast.makeText(MainActivity.this, "You are given spot " + (currentSpot + 1), Toast.LENGTH_LONG).show();
+        //set the given spot to unavailable
+        spotList.set(currentSpot, false);
+
+        //update lot
+        lotRef.update("spots", spotList);
+        lotRef.update("availableSpots", availableSpots - 1);
+        //get current time
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String currentTime = simpleDateFormat.format(timestamp);
+        double rate = 1.0;
+        //start new session
+        Session session = new Session(userID, currentTime, (currentSpot + 1), rate);
+        //update users lastSession and parked fields
+        userRef.update("lastSession", currentTime);
+        userRef.update("parked", true);
+
+        parkButton.setVisibility(View.GONE);
+        unparkButton.setVisibility(View.VISIBLE);
+
+        //set session to sessions collection using userID and start time
+        DocumentReference sessionRef = fStore.collection("sessions").document(userID + currentTime);
+        sessionRef.set(session);
     }
 
 }
