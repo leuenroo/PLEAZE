@@ -1,9 +1,12 @@
 package com.leuenroo.pleaze;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -26,12 +29,14 @@ import java.util.Date;
 public class ReservationActivity extends AppCompatActivity {
 
 
-    private EditText date_time_in;
-    private String dateString, userID;
+    private EditText dateTimeInput;
+    private String dateAndTime, date, time, userID;
+    private int spotNumber;
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
-    private DocumentReference userRef;
+    private DocumentReference userRef, reservationRef;
     private Boolean datePicked;
+    private Reservation reservation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,24 +45,24 @@ public class ReservationActivity extends AppCompatActivity {
 
         datePicked = false;
 
+        //get instances
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         userID = fAuth.getCurrentUser().getUid();
 
         userRef = fStore.collection("users").document(userID);
 
-        date_time_in=findViewById(R.id.date_time_input);
+        //set up date time input
+        dateTimeInput = findViewById(R.id.dateTimeInput);
 
-        date_time_in.setInputType(InputType.TYPE_NULL);
+        dateTimeInput.setInputType(InputType.TYPE_NULL);
 
-        date_time_in.setOnClickListener(new View.OnClickListener() {
+        dateTimeInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getReservation(date_time_in);
+                getReservation(dateTimeInput);
             }
         });
-
-
 
     }
 
@@ -71,19 +76,28 @@ public class ReservationActivity extends AppCompatActivity {
                 calendar.set(Calendar.MONTH,month);
                 calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
 
+                //date picker
                 TimePickerDialog.OnTimeSetListener timeSetListener=new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
                         calendar.set(Calendar.MINUTE,minute);
 
+                        //create different date formats to separate time differently
                         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        SimpleDateFormat simpleDateFormat2=new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat simpleDateFormat3=new SimpleDateFormat("HH:mm");
 
-                        date_time_in.setText(simpleDateFormat.format(calendar.getTime()));
+                        dateTimeInput.setText(simpleDateFormat.format(calendar.getTime()));
 
-                        dateString = date_time_in.getText().toString();
-                        dateString += ":00";
+                        dateAndTime = dateTimeInput.getText().toString();
+                        dateAndTime += ":00";
 
+                        //get date and time separately
+                        date = simpleDateFormat2.format(calendar.getTime());
+                        time = simpleDateFormat3.format(calendar.getTime());
+
+                        //user has picked date
                         datePicked = true;
                     }
                 };
@@ -101,22 +115,47 @@ public class ReservationActivity extends AppCompatActivity {
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
     }
 
-    //update
-    public void update (View view) {
+    //set reservation
+    public void setReservation (View view) {
+        //make sure date and time have been picked
         if (datePicked == true) {
-            userRef.update("reservation", dateString);
 
-            Toast.makeText(ReservationActivity.this, "Reservation set.", Toast.LENGTH_LONG).show();
+            //create the dialog
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Enter desired spot number");
+            final EditText input = new EditText(this);
+            //only allow numbers to be input
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            input.setRawInputType(Configuration.KEYBOARD_12KEY);
+            alert.setView(input);
+            //set add and cancel buttons
+            alert.setPositiveButton("Enter", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    //if they click ok add the credit to their account
+                    //convert editText to int
+                    spotNumber = Integer.parseInt(input.getText().toString());
+                    reservation = new Reservation(userID, date, time, spotNumber, false);
+                    reservationRef = fStore.collection("reservations").document(date + spotNumber);
+                    userRef.update("reservation", dateAndTime);
+                    reservationRef.set(reservation);
+
+                    Toast.makeText(ReservationActivity.this, "Reservation set.", Toast.LENGTH_LONG).show();
+
+                }
+            });
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    //nothing
+                }
+            });
+            alert.show();
+
         }
 
+        //if date and time arent picked, ask user for them
         else {
             Toast.makeText(ReservationActivity.this, "Please pick a date.", Toast.LENGTH_LONG).show();
         }
     }
-
-
-
-
-
 
 }

@@ -8,7 +8,7 @@
     tools:context=".ReservationActivity">
 
     <EditText
-        android:id="@+id/date_time_input"
+        android:id="@+id/dateTimeInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
@@ -38,7 +38,7 @@
         android:layout_marginTop="30dp"
         android:width="120dp"
         android:text="Reserve"
-        android:onClick="update"
+        android:onClick="setReservation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/date_time_input" />
