@@ -30,11 +30,11 @@ public class MainActivity extends AppCompatActivity {
     private ParkingLot parkingLot;
     private Boolean[] spotArray;
     private List<Boolean> spotList;
-    private int totalSpots, currentSpot, availableSpots;
+    private int totalSpots, currentSpot, availableSpots, premiumSpots;
     private double credit;
     private String userID, startTime, date, reservation;
-    private boolean parked;
-    private Button parkButton, unparkButton;
+    private boolean parked, premium;
+    private Button parkButton, unparkButton, premiumButton;
     private FirebaseFirestore fStore;
     private FirebaseAuth fAuth;
     private DocumentReference lotRef, userRef, reservationRef;
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         //set views
         parkButton = findViewById(R.id.parkButton);
         unparkButton = findViewById(R.id.unparkButton);
+        premiumButton = findViewById(R.id.premiumButton);
 
         //get date
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         //set buttons invisible by default
         parkButton.setVisibility(View.GONE);
         unparkButton.setVisibility(View.GONE);
+        premiumButton.setVisibility(View.GONE);
 
         //create reference for parking lot
         lotRef = fStore.collection("parkingLots").document("parkingLot");
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                             availableSpots = documentSnapshot.getLong("availableSpots").intValue();
                             totalSpots = documentSnapshot.getLong("totalSpots").intValue();
                             spotList = (List<Boolean>) documentSnapshot.get("spots");
+                            premiumSpots = documentSnapshot.getLong("premiumSpots").intValue();
                         }
                         //if there is an error display to user
                         else {
@@ -115,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             else {
                                 parkButton.setVisibility(View.VISIBLE);
+                                premiumButton.setVisibility(View.VISIBLE);
                             }
                         }
                         //if there is an error display to user
@@ -149,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
         Arrays.fill(spotArray, true);
         List<Boolean> spotList = Arrays.asList(spotArray);
         parkingLot = new ParkingLot(50, 50, spotList);
-
         DocumentReference documentReference = fStore.collection("parkingLots").document("parkingLot");
         //set lot to firestore docref
         documentReference.set(parkingLot).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -159,8 +162,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         });
-
-
     }*/
 
     //park function
@@ -179,9 +180,10 @@ public class MainActivity extends AppCompatActivity {
                             spotList = (List<Boolean>) documentSnapshot.get("spots");
 
                             //check for lowest available spot
-                            for (currentSpot = 0; currentSpot < spotList.size(); currentSpot++) {
+                            for (currentSpot = premiumSpots; currentSpot < spotList.size(); currentSpot++) {
 
                                 if (spotList.get(currentSpot) == true ) {
+                                    premium = false;
                                     //update lot
                                     parkUpdate();
                                     //break out of loop when spot is given and set
@@ -236,18 +238,25 @@ public class MainActivity extends AppCompatActivity {
                                                 //get spot number from session document
                                                 currentSpot = documentSnapshot.getLong("spotNumber").intValue();
                                                 startTime = documentSnapshot.getString("startTime");
+                                                premium = documentSnapshot.getBoolean("premium");
                                                 //get current time
                                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                                                 String currentTime = simpleDateFormat.format(timestamp);
 
+                                                double rate = 0;
                                                 // charge by calling find difference function using start and current time
-                                                double rate = 1.0;
+                                                if (premium = true) {
+                                                    rate = 1.5;
+                                                }
+                                                else {
+                                                    rate = 1.0;
+                                                }
                                                 double timeDifference = findDifference(startTime, currentTime);
                                                 //multiply time in minutes by rate
                                                 double total = rate * timeDifference;
                                                 //create new session instance
-                                                Session session = new Session(userID, startTime, currentTime, (currentSpot + 1), rate, total);
+                                                Session session = new Session(userID, startTime, currentTime, (currentSpot + 1), rate, total, premium);
                                                 //set session to firestore
                                                 sessionRef.set(session);
                                                 //create credit variable and subtract total
@@ -283,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
                                                                                         userRef.update("parked", false);
 
                                                                                         parkButton.setVisibility(View.VISIBLE);
+                                                                                        premiumButton.setVisibility(View.VISIBLE);
                                                                                         unparkButton.setVisibility(View.GONE);
 
                                                                                     }
@@ -338,6 +348,55 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void parkPremium (View view) {
+        //get info from parking lot
+
+        lotRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+
+                            //set info to variables
+                            availableSpots = documentSnapshot.getLong("availableSpots").intValue();
+                            totalSpots = documentSnapshot.getLong("totalSpots").intValue();
+                            spotList = (List<Boolean>) documentSnapshot.get("spots");
+
+                            //check for lowest available spot
+                            for (currentSpot = 0; currentSpot < premiumSpots; currentSpot++) {
+
+                                if (spotList.get(currentSpot) == true ) {
+                                    premium = true;
+                                    //update lot
+                                    parkUpdate();
+                                    //break out of loop when spot is given and set
+                                    break;
+                                }
+
+                                //if current spot is last spot, let them know they cannot park
+                                else if (currentSpot == (premiumSpots - 1)) {
+                                    Toast.makeText(MainActivity.this, "No premium spots available. Please try again later.", Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                        }
+                        //if there is an error display to user
+                        else {
+                            Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                })
+                //if there is an error display to user
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
     //take user to profile activity
     public void profile (View view) {
         startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
@@ -351,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
 
     // function to find difference for total calculation
     static double findDifference(String start_date,
-                               String end_date)
+                                 String end_date)
     {
         // format to make date object
         SimpleDateFormat sdf
@@ -401,12 +460,13 @@ public class MainActivity extends AppCompatActivity {
         String currentTime = simpleDateFormat.format(timestamp);
         double rate = 1.0;
         //start new session
-        Session session = new Session(userID, currentTime, (currentSpot + 1), rate);
+        Session session = new Session(userID, currentTime, (currentSpot + 1), rate, premium);
         //update users lastSession and parked fields
         userRef.update("lastSession", currentTime);
         userRef.update("parked", true);
 
         parkButton.setVisibility(View.GONE);
+        premiumButton.setVisibility(View.GONE);
         unparkButton.setVisibility(View.VISIBLE);
 
         //set session to sessions collection using userID and start time

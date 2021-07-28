@@ -3,6 +3,16 @@ package com.leuenroo.pleaze;
 public class Session {
     String userID, startTime, endTime;
     int spotNumber;
+    boolean premium;
+
+    public boolean isPremium() {
+        return premium;
+    }
+
+    public void setPremium(boolean premium) {
+        this.premium = premium;
+    }
+
     double rate, total;
 
     public String getUserID() {
@@ -53,19 +63,21 @@ public class Session {
         this.total = total;
     }
 
-    public Session(String userID, String startTime, int spotNumber, double rate) {
+    public Session(String userID, String startTime, int spotNumber, double rate, boolean premium) {
         this.userID = userID;
         this.startTime = startTime;
         this.spotNumber = spotNumber;
         this.rate = rate;
+        this.premium = premium;
     }
 
-    public Session(String userID, String startTime, String endTime, int spotNumber, double rate, double total) {
+    public Session(String userID, String startTime, String endTime, int spotNumber, double rate, double total, boolean premium) {
         this.userID = userID;
         this.startTime = startTime;
         this.endTime = endTime;
         this.spotNumber = spotNumber;
         this.rate = rate;
         this.total = total;
+        this.premium = premium;
     }
 }
