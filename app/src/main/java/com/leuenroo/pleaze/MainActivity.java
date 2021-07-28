@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                             totalSpots = documentSnapshot.getLong("totalSpots").intValue();
                             spotList = (List<Boolean>) documentSnapshot.get("spots");
 
-                            //check for lowest available spot
+                            //check for lowest available non-premium spot
                             for (currentSpot = premiumSpots; currentSpot < spotList.size(); currentSpot++) {
 
                                 if (spotList.get(currentSpot) == true ) {
@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
                             totalSpots = documentSnapshot.getLong("totalSpots").intValue();
                             spotList = (List<Boolean>) documentSnapshot.get("spots");
 
-                            //check for lowest available spot
+                            //check for lowest available premium spot
                             for (currentSpot = 0; currentSpot < premiumSpots; currentSpot++) {
 
                                 if (spotList.get(currentSpot) == true ) {
