@@ -33,6 +33,7 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText firstNameET, lastNameET, phoneET;
     private TextView emailTV, creditTV;
     private Button updateProfileButton;
+    private boolean parked;
     private DocumentReference userRef;
     private Account account;
     private double credit, addedCredit;
@@ -77,6 +78,7 @@ public class ProfileActivity extends AppCompatActivity {
                             credit = documentSnapshot.getDouble("credit");
                             creditString = "$" + String.format("%.2f",credit);
                             creditTV.setText(creditString);
+                            parked = documentSnapshot.getBoolean("parked");
 
                         }
                         //if there is an error display to user
@@ -109,7 +111,7 @@ public class ProfileActivity extends AppCompatActivity {
         phone = phoneET.getText().toString();
 
         //create account object with appropriate values
-        account = new Account(firstName, lastName, phone, email, credit, null);
+        account = new Account(firstName, lastName, phone, email, credit, null, parked);
 
 
         userRef = fStore.collection("users").document(userID);
