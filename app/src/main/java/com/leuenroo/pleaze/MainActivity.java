@@ -168,49 +168,55 @@ public class MainActivity extends AppCompatActivity {
     public void park (View view) {
         //get info from parking lot
 
-        lotRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
+        if (credit > 0 ) {
+            lotRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
 
-                            //set info to variables
-                            availableSpots = documentSnapshot.getLong("availableSpots").intValue();
-                            totalSpots = documentSnapshot.getLong("totalSpots").intValue();
-                            spotList = (List<Boolean>) documentSnapshot.get("spots");
+                                //set info to variables
+                                availableSpots = documentSnapshot.getLong("availableSpots").intValue();
+                                totalSpots = documentSnapshot.getLong("totalSpots").intValue();
+                                spotList = (List<Boolean>) documentSnapshot.get("spots");
 
-                            //check for lowest available non-premium spot
-                            for (currentSpot = premiumSpots; currentSpot < spotList.size(); currentSpot++) {
+                                //check for lowest available non-premium spot
+                                for (currentSpot = premiumSpots; currentSpot < spotList.size(); currentSpot++) {
 
-                                if (spotList.get(currentSpot) == true ) {
-                                    premium = false;
-                                    //update lot
-                                    parkUpdate();
-                                    //break out of loop when spot is given and set
-                                    break;
+                                    if (spotList.get(currentSpot) == true ) {
+                                        premium = false;
+                                        //update lot
+                                        parkUpdate();
+                                        //break out of loop when spot is given and set
+                                        break;
+                                    }
+
+                                    //if current spot is last spot, let them know they cannot park
+                                    else if (currentSpot == (spotList.size() - 1)) {
+                                        Toast.makeText(MainActivity.this, "No spots available. Please try again later.", Toast.LENGTH_LONG).show();
+                                    }
                                 }
 
-                                //if current spot is last spot, let them know they cannot park
-                                else if (currentSpot == (spotList.size() - 1)) {
-                                    Toast.makeText(MainActivity.this, "No spots available. Please try again later.", Toast.LENGTH_LONG).show();
-                                }
+                            }
+                            //if there is an error display to user
+                            else {
+                                Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
                             }
 
                         }
-                        //if there is an error display to user
-                        else {
+                    })
+                    //if there is an error display to user
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
                             Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
                         }
+                    });
+        }
 
-                    }
-                })
-                //if there is an error display to user
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        else {
+            Toast.makeText(MainActivity.this, "Please add funds to your account.", Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -247,10 +253,10 @@ public class MainActivity extends AppCompatActivity {
                                                 double rate = 0;
                                                 // charge by calling find difference function using start and current time
                                                 if (premium = true) {
-                                                    rate = 1.5;
+                                                    rate = .08;
                                                 }
                                                 else {
-                                                    rate = 1.0;
+                                                    rate = .05;
                                                 }
                                                 double timeDifference = findDifference(startTime, currentTime);
                                                 //multiply time in minutes by rate
@@ -351,49 +357,55 @@ public class MainActivity extends AppCompatActivity {
     public void parkPremium (View view) {
         //get info from parking lot
 
-        lotRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
+        if (credit > 0) {
+            lotRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
 
-                            //set info to variables
-                            availableSpots = documentSnapshot.getLong("availableSpots").intValue();
-                            totalSpots = documentSnapshot.getLong("totalSpots").intValue();
-                            spotList = (List<Boolean>) documentSnapshot.get("spots");
+                                //set info to variables
+                                availableSpots = documentSnapshot.getLong("availableSpots").intValue();
+                                totalSpots = documentSnapshot.getLong("totalSpots").intValue();
+                                spotList = (List<Boolean>) documentSnapshot.get("spots");
 
-                            //check for lowest available premium spot
-                            for (currentSpot = 0; currentSpot < premiumSpots; currentSpot++) {
+                                //check for lowest available premium spot
+                                for (currentSpot = 0; currentSpot < premiumSpots; currentSpot++) {
 
-                                if (spotList.get(currentSpot) == true ) {
-                                    premium = true;
-                                    //update lot
-                                    parkUpdate();
-                                    //break out of loop when spot is given and set
-                                    break;
+                                    if (spotList.get(currentSpot) == true ) {
+                                        premium = true;
+                                        //update lot
+                                        parkUpdate();
+                                        //break out of loop when spot is given and set
+                                        break;
+                                    }
+
+                                    //if current spot is last spot, let them know they cannot park
+                                    else if (currentSpot == (premiumSpots - 1)) {
+                                        Toast.makeText(MainActivity.this, "No premium spots available. Please try again later.", Toast.LENGTH_LONG).show();
+                                    }
                                 }
 
-                                //if current spot is last spot, let them know they cannot park
-                                else if (currentSpot == (premiumSpots - 1)) {
-                                    Toast.makeText(MainActivity.this, "No premium spots available. Please try again later.", Toast.LENGTH_LONG).show();
-                                }
+                            }
+                            //if there is an error display to user
+                            else {
+                                Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
                             }
 
                         }
-                        //if there is an error display to user
-                        else {
+                    })
+                    //if there is an error display to user
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
                             Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
                         }
+                    });
+        }
 
-                    }
-                })
-                //if there is an error display to user
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Error loading document.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        else {
+            Toast.makeText(MainActivity.this, "Please add funds to your account.", Toast.LENGTH_LONG).show();
+        }
 
     }
 
